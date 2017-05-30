@@ -43,124 +43,135 @@ function GetLunar($year,&$month,&$day,&$lunar,$pp=0)
 		$jde= JDEcalc($year+1,$month, $day);
 	else
 		$jde= JDEcalc($year,$month, $day);
-if($month!=12)
-  $year--;
-$jq= GetOneYearJQ($year);
-$moon= GetOneYearMoon($year);
-$huyu1=$jq[1];
-$huyu2=$jq[25];
+	if($month!=12)
+	$year--;
+	$jq= GetOneYearJQ($year);
+	$moon= GetOneYearMoon($year);
+	$huyu1=$jq[1];
+	$huyu2=$jq[25];
 
-$cnum=0;
-for($i=1;$i<15;$i++)
-{
-    //$moon[$i]+=8/24;
-    if($moon[$i]-floor($moon[$i])<0.5) $moon[$i]=floor($moon[$i])-0.5; else $moon[$i]=floor($moon[$i])+0.5;
-}
+	$cnum=0;
+	for($i=1;$i<15;$i++)
+	{
+		//$moon[$i]+=8/24;
+		if($moon[$i]-floor($moon[$i])<0.5) $moon[$i]=floor($moon[$i])-0.5; else $moon[$i]=floor($moon[$i])+0.5;
+	}
 
-if($moon[1]<$huyu1 && $moon[2]<=$huyu1)
-{
-    for($i=1;$i<15;$i++)
-    {
-    if($i==14){$moon[14]=$moon[13]+30;break;}
-        $moon[$i]=$moon[$i+1];
-    }
-}
+	if($moon[1]<$huyu1 && $moon[2]<=$huyu1)
+	{
+		for($i=1;$i<15;$i++)
+		{
+			if($i==14){$moon[14]=$moon[13]+30;break;}
+			$moon[$i]=$moon[$i+1];
+		}
+	}
 
-if($moon[1]<$huyu1 && $moon[2]<$huyu1)
-{
-    for($i=1;$i<15;$i++)
-    {
-    if($i==14){$moon[14]=$moon[13]+30;break;}
-        $moon[$i]=$moon[$i+1];
-    }
-}
-foreach($moon as $tmp)
-    if($tmp>$huyu1 && $tmp<=$huyu2) {$cnum++; $months[$cnum]=$tmp;}
-if($cnum==13)
-{
-    $lrun=1;
-    for($i=2;$i<14;$i++)
-    {
-        if(!($jq[$i*2-1]>=$months[$i-1] && $jq[$i*2-1]<=$months[$i])) break;
-    }
-    $run=$i-2;
-    if($run<=0) $run+=12;
-}else
-    $lrun=0;
-if($year==2033) $run=12;
-for($i=1;$i<15;$i++)
-    if($jde>=$moon[$i] && $jde<$moon[$i+1]) break;
+	if($moon[1]<$huyu1 && $moon[2]<$huyu1)
+	{
+		for($i=1;$i<15;$i++)
+		{
+			if($i==14){$moon[14]=$moon[13]+30;break;}
+				$moon[$i]=$moon[$i+1];
+		}
+	}
+	foreach($moon as $tmp)
+		if($tmp>$huyu1 && $tmp<=$huyu2) 
+		{
+			$cnum++; 
+			$months[$cnum]=$tmp;
+		}
+			
+	if($cnum==13)
+	{
+		$lrun=1;
+		for($i=2;$i<14;$i++)
+		{
+			if(!($jq[$i*2-1]>=$months[$i-1] && $jq[$i*2-1]<=$months[$i])) break;
+		}
+		$run=$i-2;
+		if($run<=0) $run+=12;
+	}else
+		$lrun=0;
+	if($year==2033) $run=12;
+	for($i=1;$i<15;$i++)
+		if($jde>=$moon[$i] && $jde<$moon[$i+1]) break;
 
-if($i==15 && month==12)
-{
-	$res=GetLunar($year-1,$month,$day,$lunar,1);
-	return $res;
-}elseif($i==15 && month==11)
-{
-	$res=GetLunar($year+1,$month,$day,$lunar,1);
-	return $res;
-}
-$startday=$moon[$i];
-//echo $i;
-if($startday-floor($startday)<0.5)
- $startday=floor($startday)-0.5;
-else
-   $startday=floor($startday)+0.5;
-$lday=$jde-$startday+1;
-$k=1;
-if($lrun)
-	if($i==13 && $run<11){ $i--; $k=0;}
-if($i<3) $i+=12;
-$lmonth=$i-2;
-$p=0;
-if($lrun)
-{
+	if($i==15 && month==12)
+	{
+		$res=GetLunar($year-1,$month,$day,$lunar,1);
+		return $res;
+	}elseif($i==15 && month==11)
+	{
+		$res=GetLunar($year+1,$month,$day,$lunar,1);
+		return $res;
+	}
+	$startday=$moon[$i];
+	//echo $i;
+	if($startday-floor($startday)<0.5)
+	$startday=floor($startday)-0.5;
+	else
+	$startday=floor($startday)+0.5;
+	$lday=$jde-$startday+1;
+	$k=1;
+	if($lrun)
+	if($i==13 && $run<11)
+	{
+		$i--; 
+		$k=0;
+	}
+	if($i<3) $i+=12;
+	$lmonth=$i-2;
+	$p=0;
+	if($lrun)
+	{
 
-    if($lmonth==$run && $k==1)
-    {
-        $lmonth--;
-        $p=1;
-    }elseif($lmonth>$run && ($lmonth <11 && $run<11) && $k)
-        $lmonth--;
-    elseif($lmonth>$run && $run>11 && $k)
-        $lmonth--;
-    elseif($lmonth<$run && $run>11 && $k)
-    {
-        $lmonth--;
-        if($lmonth<1) $lmonth+=12;
-    }
-}
-$mon=array("零","正月","二月","三月","四月","五月","六月","七月","八月","九月","十月","冬月","腊月");
-$da=array("十","一","二","三","四","五","六","七","八","九","十");
-$tp=floor($lday/10);
-if($lday==10) $tp--;
-switch($tp)
-{case 0:
-     $tmp="初".$da[$lday%10];
-     break;
- case 1:
-     $tmp="十".$da[$lday%10];
-     break;
- case 2:
-     $tmp="廿".$da[$lday%10];
-     break;
- case 3:
-     $tmp="三".$da[$lday%10];
-     break;
-}
-if($lday==20) $tmp="二十";
-$day=$lday;
-$month=$lmonth;
-if($p)
-{
-    $result="闰".$mon[$lmonth].$tmp;
-	$lunar=1;
-}else
-{
-    $result=$mon[$lmonth].$tmp;
-	$lunar=0;
-}
-return $result;
+		if($lmonth==$run && $k==1)
+		{
+			$lmonth--;
+			$p=1;
+		}elseif($lmonth>$run && ($lmonth <11 && $run<11) && $k)
+			$lmonth--;
+		elseif($lmonth>$run && $run>11 && $k)
+			$lmonth--;
+		elseif($lmonth<$run && $run>11 && $k)
+		{
+			$lmonth--;
+			if($lmonth<1) $lmonth+=12;
+		}
+	}
+	$mon=array("零","正月","二月","三月","四月","五月","六月","七月","八月","九月","十月","冬月","腊月");
+	$da=array("十","一","二","三","四","五","六","七","八","九","十");
+	$tp=floor($lday/10);
+	if($lday==10) $tp--;
+	switch($tp)
+	{
+		case 0:
+			$tmp="初".$da[$lday%10];
+			break;
+		case 1:
+			$tmp="十".$da[$lday%10];
+			break;
+		case 2:
+			$tmp="廿".$da[$lday%10];
+			break;
+		case 3:
+			$tmp="三".$da[$lday%10];
+			break;
+	}
+	if($lday==20) $tmp="二十";
+	$day=$lday;
+	$month=$lmonth;
+	if($p)
+	{
+		$result="闰".$mon[$lmonth].$tmp;
+		$lunar=1;
+	}
+	else
+	{
+		$result=$mon[$lmonth].$tmp;
+		$lunar=0;
+	}
+	return $result;
 }
 
 function GetOneYearMoon($year)
@@ -176,7 +187,7 @@ function GetOneYearMoon($year)
 	}
 	return $res;
 }
-FUNCTION GetOneYearJQ($year)
+function GetOneYearJQ($year)
 {
 	$jq[1]=GetDateJQ($year,0);
 	$year++;
